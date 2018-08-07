@@ -3,7 +3,6 @@ package com.edgenda.bnc.skillsmanager.rest;
 import com.edgenda.bnc.skillsmanager.model.Employee;
 import com.edgenda.bnc.skillsmanager.model.Skill;
 import com.edgenda.bnc.skillsmanager.service.SkillService;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
