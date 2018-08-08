@@ -15,10 +15,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/employees")
-public class EmployeeResource {
+public class EmployeeController {
+
+    private final EmployeeService employeeService;
 
     @Autowired
-    private EmployeeService employeeService;
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
 
     @ApiOperation(value = "Get employee by ID")
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
@@ -41,12 +45,7 @@ public class EmployeeResource {
     @ApiOperation(value = "Update an employee")
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
     public void updateEmployee(@PathVariable Long id, Employee employee) {
-        final Employee updatedEmployee = Employee.builder()
-                .id(id)
-                .firstName(employee.getFirstName())
-                .lastName(employee.getLastName())
-                .email(employee.getEmail())
-                .build();
+        final Employee updatedEmployee = employee.toBuilder().id(id).build();
         employeeService.updateEmployee(updatedEmployee);
     }
 

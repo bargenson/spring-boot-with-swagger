@@ -14,11 +14,15 @@ import java.util.List;
 @Service
 public class SkillService {
 
-    @Autowired
-    private SkillRepository skillRepository;
+    private final SkillRepository skillRepository;
+
+    private final EmployeeRepository employeeRepository;
 
     @Autowired
-    private EmployeeRepository employeeRepository;
+    public SkillService(SkillRepository skillRepository, EmployeeRepository employeeRepository) {
+        this.skillRepository = skillRepository;
+        this.employeeRepository = employeeRepository;
+    }
 
     public Skill getSkill(Long id) {
         Assert.notNull(id, "Skill ID cannot be null");

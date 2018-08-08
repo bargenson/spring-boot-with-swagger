@@ -14,10 +14,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/skills")
-public class SkillResource {
+public class SkillController {
+
+    private final SkillService skillService;
 
     @Autowired
-    private SkillService skillService;
+    public SkillController(SkillService skillService) {
+        this.skillService = skillService;
+    }
 
     @ApiOperation(value = "Get a skill by ID")
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
