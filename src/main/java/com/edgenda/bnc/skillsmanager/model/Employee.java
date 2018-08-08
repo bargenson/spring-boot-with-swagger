@@ -16,7 +16,7 @@ import javax.persistence.ManyToMany;
 import java.util.List;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @RequiredArgsConstructor(onConstructor = @__(@PersistenceConstructor))
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})

@@ -6,19 +6,24 @@ import com.edgenda.bnc.skillsmanager.repository.EmployeeRepository;
 import com.edgenda.bnc.skillsmanager.repository.SkillRepository;
 import com.edgenda.bnc.skillsmanager.service.exception.UnknownSkillException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.List;
 
-@Service
+@Component
 public class SkillService {
 
-    @Autowired
-    private SkillRepository skillRepository;
+    private final SkillRepository skillRepository;
+
+    private final EmployeeRepository employeeRepository;
 
     @Autowired
-    private EmployeeRepository employeeRepository;
+    public SkillService(SkillRepository skillRepository, EmployeeRepository employeeRepository) {
+        this.skillRepository = skillRepository;
+        this.employeeRepository = employeeRepository;
+    }
 
     public Skill getSkill(Long id) {
         Assert.notNull(id, "Skill ID cannot be null");
@@ -35,3 +40,4 @@ public class SkillService {
         return employeeRepository.findBySkillId(skillId);
     }
 }
+
