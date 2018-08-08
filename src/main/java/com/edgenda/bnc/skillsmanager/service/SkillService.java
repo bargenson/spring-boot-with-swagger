@@ -12,7 +12,7 @@ import org.springframework.util.Assert;
 
 import java.util.List;
 
-@Component
+@Service
 public class SkillService {
 
     private final SkillRepository skillRepository;
