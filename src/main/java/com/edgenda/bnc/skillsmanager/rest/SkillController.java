@@ -6,6 +6,8 @@ import com.edgenda.bnc.skillsmanager.rest.entity.SkillResource;
 import com.edgenda.bnc.skillsmanager.service.SkillService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resources;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,8 +49,9 @@ public class SkillController {
 
     @ApiOperation(value = "Get all skills")
     @RequestMapping(method = RequestMethod.GET)
-    public List<SkillResource> getSkills() {
-        return skillService.getSkills()
+    public Resources<SkillResource> getSkills() {
+        final Link self = linkTo(methodOn(SkillController.class).getSkills()).withSelfRel();
+        final List<SkillResource> skillResources = skillService.getSkills()
                 .stream()
                 .map(skill -> {
                     final SkillResource skillResource = SkillResource.fromSkill(skill);
@@ -56,18 +59,21 @@ public class SkillController {
                     return skillResource;
                 })
                 .collect(toList());
+        return new Resources<>(skillResources, self);
     }
 
     @ApiOperation(value = "Get employees with skill")
     @RequestMapping(path = "/{id}/employees", method = RequestMethod.GET)
-    public List<EmployeeResource> getEmployeesWithSkill(@PathVariable Long id) {
-        return skillService.getEmployeesWithSkill(id)
+    public Resources<EmployeeResource> getEmployeesWithSkill(@PathVariable Long id) {
+        final Link self = linkTo(methodOn(SkillController.class).getEmployeesWithSkill(id)).withSelfRel();
+        final List<EmployeeResource> employeeResources = skillService.getEmployeesWithSkill(id)
                 .stream()
                 .map(employee -> EmployeeController.addEmployeeResourceLinks(
                         employee.getId(),
                         EmployeeResource.fromEmployee(employee))
                 )
                 .collect(toList());
+        return new Resources<>(employeeResources, self);
     }
 
 }

@@ -1,12 +1,13 @@
 package com.edgenda.bnc.skillsmanager.rest;
 
 import com.edgenda.bnc.skillsmanager.model.Employee;
-import com.edgenda.bnc.skillsmanager.model.Skill;
 import com.edgenda.bnc.skillsmanager.rest.entity.EmployeeResource;
 import com.edgenda.bnc.skillsmanager.rest.entity.SkillResource;
 import com.edgenda.bnc.skillsmanager.service.EmployeeService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,11 +45,13 @@ public class EmployeeController {
 
     @ApiOperation(value = "Get all employees")
     @RequestMapping(method = RequestMethod.GET)
-    public List<EmployeeResource> getEmployees() {
-        return employeeService.getEmployees()
+    public Resources<EmployeeResource> getEmployees() {
+        final Link self = linkTo(methodOn(EmployeeController.class).getEmployees()).withSelfRel();
+        final List<EmployeeResource> employeesResources = employeeService.getEmployees()
                 .stream()
                 .map(employee -> addEmployeeResourceLinks(employee.getId(), EmployeeResource.fromEmployee(employee)))
                 .collect(toList());
+        return new Resources<>(employeesResources, self);
     }
 
     @ApiOperation(value = "Create an employee")
@@ -70,14 +73,16 @@ public class EmployeeController {
 
     @ApiOperation(value = "Get employee's skills")
     @RequestMapping(path = "/{id}/skills", method = RequestMethod.GET)
-    public List<SkillResource> getEmployeeSkills(@PathVariable Long id) {
-        return employeeService.getEmployeeSkills(id)
+    public Resources<SkillResource> getEmployeeSkills(@PathVariable Long id) {
+        final Link self = linkTo(methodOn(EmployeeController.class).getEmployeeSkills(id)).withSelfRel();
+        final List<SkillResource> skillResources = employeeService.getEmployeeSkills(id)
                 .stream()
                 .map(skill -> {
                     final SkillResource skillResource = SkillResource.fromSkill(skill);
                     return SkillController.addSkillResourceLinks(skill.getId(), skillResource);
                 })
                 .collect(toList());
+        return new Resources<>(skillResources, self);
     }
 
 }
