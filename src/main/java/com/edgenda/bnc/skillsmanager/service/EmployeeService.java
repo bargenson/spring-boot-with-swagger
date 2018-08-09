@@ -49,4 +49,9 @@ public class EmployeeService {
     public List<Skill> getEmployeeSkills(Long employeeId) {
         return skillRepository.findByEmployeeId(employeeId);
     }
+
+    public void deleteEmployee(Long id) {
+        Assert.notNull(id, "ID cannot be null");
+        employeeRepository.delete(id);
+    }
 }

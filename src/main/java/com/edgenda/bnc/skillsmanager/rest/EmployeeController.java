@@ -3,14 +3,14 @@ package com.edgenda.bnc.skillsmanager.rest;
 import com.edgenda.bnc.skillsmanager.model.Employee;
 import com.edgenda.bnc.skillsmanager.model.Skill;
 import com.edgenda.bnc.skillsmanager.service.EmployeeService;
-import io.swagger.annotations.Api;
+import com.edgenda.bnc.skillsmanager.service.exception.UnknownEmployeeException;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -38,13 +38,14 @@ public class EmployeeController {
 
     @ApiOperation(value = "Create an employee")
     @RequestMapping(method = RequestMethod.POST)
-    public Employee createEmployee(Employee employee) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public Employee createEmployee(@RequestBody @Valid Employee employee) {
         return employeeService.createEmployee(employee);
     }
 
     @ApiOperation(value = "Update an employee")
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
-    public void updateEmployee(@PathVariable Long id, Employee employee) {
+    public void updateEmployee(@PathVariable Long id, @RequestBody @Valid Employee employee) {
         final Employee updatedEmployee = employee.toBuilder().id(id).build();
         employeeService.updateEmployee(updatedEmployee);
     }
@@ -53,6 +54,17 @@ public class EmployeeController {
     @RequestMapping(path = "/{id}/skills", method = RequestMethod.GET)
     public List<Skill> getEmployeeSkills(@PathVariable Long id) {
         return employeeService.getEmployeeSkills(id);
+    }
+
+    @ApiOperation(value = "Delete an employee")
+    @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteEmployee(@PathVariable Long id) {
+        try {
+            employeeService.deleteEmployee(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new UnknownEmployeeException(id);
+        }
     }
 
 }

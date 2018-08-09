@@ -9,10 +9,7 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.PersistenceConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Getter
@@ -40,5 +37,12 @@ public class Employee {
     @ManyToMany(mappedBy = "employees")
     @JsonIgnoreProperties({ "employees" })
     private List<Skill> skills;
+
+    @PreRemove
+    private void removeSkillsFromEmployee() {
+        for (Skill skill : skills) {
+            skill.getEmployees().remove(this);
+        }
+    }
 
 }
