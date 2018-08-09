@@ -1,6 +1,5 @@
 package com.edgenda.bnc.skillsmanager.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,17 +8,13 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.PersistenceConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Getter
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @RequiredArgsConstructor(onConstructor = @__(@PersistenceConstructor))
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 public class Employee {
 
@@ -38,7 +33,13 @@ public class Employee {
     private String email;
 
     @ManyToMany(mappedBy = "employees")
-    @JsonIgnoreProperties({ "employees" })
     private List<Skill> skills;
+
+    @PreRemove
+    private void removeSkillsFromEmployee() {
+        for (Skill skill : skills) {
+            skill.getEmployees().remove(this);
+        }
+    }
 
 }

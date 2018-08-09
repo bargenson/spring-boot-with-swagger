@@ -4,13 +4,16 @@ import com.edgenda.bnc.skillsmanager.model.Employee;
 import com.edgenda.bnc.skillsmanager.rest.entity.EmployeeResource;
 import com.edgenda.bnc.skillsmanager.rest.entity.SkillResource;
 import com.edgenda.bnc.skillsmanager.service.EmployeeService;
+import com.edgenda.bnc.skillsmanager.service.exception.UnknownEmployeeException;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -18,7 +21,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/employees")
+@RequestMapping(value = "/employees")
 public class EmployeeController {
 
     private final EmployeeService employeeService;
@@ -57,7 +60,7 @@ public class EmployeeController {
     @ApiOperation(value = "Create an employee")
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public EmployeeResource createEmployee(EmployeeResource employeeResource) {
+    public EmployeeResource createEmployee(@RequestBody @Valid EmployeeResource employeeResource) {
         final Employee savedEmployee = employeeService.createEmployee(employeeResource.toEmployee());
         return addEmployeeResourceLinks(
                 savedEmployee.getId(),
@@ -67,8 +70,19 @@ public class EmployeeController {
 
     @ApiOperation(value = "Update an employee")
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
-    public void updateEmployee(@PathVariable Long id, EmployeeResource employeeResource) {
+    public void updateEmployee(@PathVariable Long id, @RequestBody @Valid EmployeeResource employeeResource) {
         employeeService.updateEmployee(employeeResource.toEmployee().toBuilder().id(id).build());
+    }
+
+    @ApiOperation(value = "Delete an employee")
+    @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteEmployee(@PathVariable Long id) {
+        try {
+            employeeService.deleteEmployee(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new UnknownEmployeeException(id);
+        }
     }
 
     @ApiOperation(value = "Get employee's skills")

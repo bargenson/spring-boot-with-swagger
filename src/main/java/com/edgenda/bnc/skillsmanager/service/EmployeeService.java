@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
+@Transactional
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
@@ -52,5 +54,10 @@ public class EmployeeService {
 
     public List<Skill> getEmployeeSkills(Long employeeId) {
         return skillRepository.findByEmployeeId(employeeId);
+    }
+
+    public void deleteEmployee(Long id) {
+        Assert.notNull(id, "ID cannot be null");
+        employeeRepository.delete(id);
     }
 }

@@ -1,6 +1,5 @@
 package com.edgenda.bnc.skillsmanager.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,10 +11,9 @@ import javax.persistence.*;
 import java.util.List;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @RequiredArgsConstructor(onConstructor = @__(@PersistenceConstructor))
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 public class Skill {
 
@@ -31,7 +29,6 @@ public class Skill {
 
     @ManyToMany
     @JoinTable(name = "EMPLOYEES_SKILLS")
-    @JsonIgnoreProperties({ "skills" })
     private List<Employee> employees;
 
 }
